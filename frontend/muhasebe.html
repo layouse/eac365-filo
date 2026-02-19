@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAC365 Filo - Muhasebe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="light-theme">
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-truck-moving"></i>
+                    <h1>EAC365 <span>FİLO</span></h1>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div id="userName" class="user-name">Yükleniyor...</div>
+                        <div id="userCompany" class="user-company"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Çıkış
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="nav-menu">
+        <div class="container">
+            <ul>
+                <li><a href="panel.html"><i class="fas fa-home"></i> Ana Panel</a></li>
+                <li><a href="araclar.html"><i class="fas fa-truck"></i> Araçlar</a></li>
+                <li><a href="muhasebe.html" class="active"><i class="fas fa-calculator"></i> Muhasebe</a></li>
+                <li><a href="personel.html"><i class="fas fa-users"></i> Personel</a></li>
+                <li><a href="raporlar.html"><i class="fas fa-chart-line"></i> Raporlar</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <div class="dashboard-header">
+            <div>
+                <h2><i class="fas fa-calculator"></i> Muhasebe Paneli</h2>
+                <p>Gelir, gider ve finansal takip</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openTransactionModal()">
+                    <i class="fas fa-plus"></i> Yeni İşlem
+                </button>
+                <button class="btn btn-secondary" onclick="exportTransactions()">
+                    <i class="fas fa-download"></i> Rapor Al
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tarih Filtresi -->
+        <div class="date-filter-bar">
+            <div class="date-range">
+                <input type="date" id="startDate" class="form-control">
+                <span>-</span>
+                <input type="date" id="endDate" class="form-control">
+                <button class="btn btn-sm btn-primary" onclick="filterByDate()">Filtrele</button>
+            </div>
+            <div class="quick-filters">
+                <button class="btn btn-sm" onclick="setQuickDate('today')">Bugün</button>
+                <button class="btn btn-sm" onclick="setQuickDate('week')">Bu Hafta</button>
+                <button class="btn btn-sm" onclick="setQuickDate('month')">Bu Ay</button>
+                <button class="btn btn-sm" onclick="setQuickDate('year')">Bu Yıl</button>
+            </div>
+        </div>
+        
+        <!-- Finansal Özet Kartları -->
+        <div class="finance-stats">
+            <div class="stat-card income">
+                <div class="stat-icon">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Toplam Gelir</div>
+                    <div class="stat-value" id="totalIncome">0 ₺</div>
+                    <div class="stat-detail" id="incomeCount">0 işlem</div>
+                </div>
+            </div>
+            
+            <div class="stat-card expense">
+                <div class="stat-icon">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Toplam Gider</div>
+                    <div class="stat-value" id="totalExpense">0 ₺</div>
+                    <div class="stat-detail" id="expenseCount">0 işlem</div>
+                </div>
+            </div>
+            
+            <div class="stat-card profit">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Net Kâr</div>
+                    <div class="stat-value" id="netProfit">0 ₺</div>
+                    <div class="stat-detail" id="profitMargin">%0 marj</div>
+                </div>
+            </div>
+            
+            <div class="stat-card fuel">
+                <div class="stat-icon">
+                    <i class="fas fa-gas-pump"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Yakıt Gideri</div>
+                    <div class="stat-value" id="fuelTotal">0 ₺</div>
+                    <div class="stat-detail" id="fuelLiters">0 L</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kategori Dağılımı ve Grafik -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie"></i> Kategori Dağılımı
+                </div>
+                <div class="card-body">
+                    <div class="category-chart" id="categoryChart">
+                        <!-- Grafik buraya gelecek -->
+                        <div class="chart-placeholder">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar"></i> Aylık Karşılaştırma
+                </div>
+                <div class="card-body">
+                    <div class="bar-chart" id="barChart">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Son İşlemler Tablosu -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-list"></i> İşlem Listesi
+                <div class="card-header-tabs">
+                    <button class="tab-btn active" onclick="filterType('all')">Tümü</button>
+                    <button class="tab-btn" onclick="filterType('income')">Gelir</button>
+                    <button class="tab-btn" onclick="filterType('expense')">Gider</button>
+                    <button class="tab-btn" onclick="filterType('fuel')">Yakıt</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>İşlem Tipi</th>
+                                <th>Kategori</th>
+                                <th>Açıklama</th>
+                                <th>Araç/Personel</th>
+                                <th>Tutar</th>
+                                <th>Ödeme Tipi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTable">
+                            <tr>
+                                <td colspan="8" class="text-center">Yükleniyor...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- Sayfalama buraya gelecek -->
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- İşlem Modalı -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="transactionModalTitle">Yeni İşlem Ekle</h3>
+                <button class="modal-close" onclick="closeTransactionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <input type="hidden" id="transactionId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> İşlem Tarihi</label>
+                            <input type="date" id="transactionDate" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-exchange-alt"></i> İşlem Tipi</label>
+                            <select id="transactionType" class="form-control" required onchange="handleTypeChange()">
+                                <option value="income">Gelir</option>
+                                <option value="expense">Gider</option>
+                                <option value="fuel">Yakıt</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Kategori</label>
+                            <select id="transactionCategory" class="form-control" required>
+                                <!-- Kategoriler JS ile doldurulacak -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-money-bill"></i> Tutar (₺)</label>
+                            <input type="number" id="transactionAmount" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="vehicleSelectGroup">
+                        <label><i class="fas fa-truck"></i> Araç</label>
+                        <select id="transactionVehicle" class="form-control">
+                            <option value="">Seçiniz (Opsiyonel)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="personnelSelectGroup" style="display: none;">
+                        <label><i class="fas fa-user"></i> Personel</label>
+                        <select id="transactionPersonnel" class="form-control">
+                            <option value="">Seçiniz (Opsiyonel)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> Açıklama</label>
+                        <textarea id="transactionDescription" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-credit-card"></i> Ödeme Tipi</label>
+                            <select id="paymentType" class="form-control">
+                                <option value="cash">Nakit</option>
+                                <option value="credit">Kredi Kartı</option>
+                                <option value="transfer">Banka Havalesi</option>
+                                <option value="check">Çek</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-receipt"></i> Belge No</label>
+                            <input type="text" id="documentNo" class="form-control" placeholder="Fatura/İrsaliye No">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeTransactionModal()">İptal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- İşlem Detay Modalı -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>İşlem Detayı</h3>
+                <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="transactionDetail">
+                <!-- Detaylar JS ile doldurulacak -->
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>EAC365 Filo Yönetim Sistemi © 2026 | v1.0.0</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/accounting.js"></script>
+</body>
+</html>

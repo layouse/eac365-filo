@@ -1,0 +1,16 @@
+# [FIX #25] .env dosyası Git'e commit'lenmemeli!
+# Projede .env dosyası açıkça commit'lenmişti ve JWT_SECRET, DB bilgileri ifşa edilmişti.
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

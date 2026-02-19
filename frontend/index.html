@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAC365 Filo Yönetim Sistemi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Giriş Ekranı -->
+    <div id="authScreen" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-truck-moving fa-3x"></i>
+                <h2>EAC365 FİLO</h2>
+                <p>Profesyonel Filo Yönetim Sistemi</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchTab('login')">GİRİŞ YAP</div>
+                <div class="auth-tab" onclick="switchTab('register')">KAYIT OL</div>
+            </div>
+            
+            <!-- Giriş Formu -->
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> E-posta Adresi</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="ornek@firma.com" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Şifre</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">GİRİŞ YAP</button>
+            </form>
+            
+            <!-- Kayıt Formu -->
+            <form id="registerForm" class="auth-form hidden">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Ad Soyad</label>
+                    <input type="text" id="registerName" class="form-control" placeholder="Ad-Soyad" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-building"></i> Firma Adı</label>
+                    <input type="text" id="registerCompany" class="form-control" placeholder="Ör: EAC Lojistik" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> E-posta</label>
+                    <input type="email" id="registerEmail" class="form-control" placeholder="örnek@eac365.com" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Telefon</label>
+                    <input type="tel" id="registerPhone" class="form-control" placeholder="0500 000 00 00" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Şifre</label>
+                        <input type="password" id="registerPassword" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Şifre Tekrar</label>
+                        <input type="password" id="registerPasswordConfirm" class="form-control" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">KAYIT OL</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Ana Uygulama -->
+    <div id="appScreen" style="display: none;">
+        <!-- Üst Menü -->
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-truck-moving"></i>
+                        <h1>EAC365 <span>FİLO</span></h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-details">
+                            <div id="userName" class="user-name">Yükleniyor...</div>
+                            <div id="userCompany" class="user-company"></div>
+                        </div>
+                        <button class="logout-btn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Çıkış
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Navigasyon -->
+        <nav class="nav-menu">
+            <div class="container">
+                <ul>
+                    <li><a href="index.html" class="active"><i class="fas fa-home"></i> Ana Panel</a></li>
+                    <li><a href="araclar.html"><i class="fas fa-truck"></i> Araçlar</a></li>
+                    <li><a href="muhasebe.html"><i class="fas fa-calculator"></i> Muhasebe</a></li>
+                    <li><a href="personel.html"><i class="fas fa-users"></i> Personel</a></li>
+                    <li><a href="raporlar.html"><i class="fas fa-chart-line"></i> Raporlar</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Ana İçerik -->
+        <main class="container">
+            <!-- Dashboard Başlık -->
+            <div class="dashboard-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Filo Yönetim Paneli</h2>
+                <p>Hoş geldiniz, bugün filosunuzu yönetin</p>
+            </div>
+            
+            <!-- Mesaj Alanı -->
+            <div id="messageContainer"></div>
+            
+            <!-- İstatistik Kartları -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-truck stat-icon"></i>
+                    <div class="stat-value" id="totalVehicles">0</div>
+                    <div class="stat-label">Toplam Araç</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-gas-pump stat-icon"></i>
+                    <div class="stat-value" id="totalFuel">0 L</div>
+                    <div class="stat-label">Toplam Yakıt</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-money-bill-wave stat-icon"></i>
+                    <div class="stat-value" id="totalIncome">0 ₺</div>
+                    <div class="stat-label">Toplam Gelir</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-chart-line stat-icon"></i>
+                    <div class="stat-value" id="totalKm">0 km</div>
+                    <div class="stat-label">Toplam KM</div>
+                </div>
+            </div>
+            
+            <!-- Son Hareketler -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-history"></i> Son Hareketler
+                    <button class="btn btn-sm btn-primary" style="margin-left: auto;" onclick="loadRecentActivities()">
+                        <i class="fas fa-sync-alt"></i> Yenile
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>İşlem</th>
+                                    <th>Araç</th>
+                                    <th>Tutar</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activitiesBody">
+                                <tr>
+                                    <td colspan="5" class="text-center">Veri bulunamadı</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <p>EAC365 Filo Yönetim Sistemi © 2026 | Tüm hakları saklıdır</p>
+            </div>
+        </footer>
+    </div>
+    
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

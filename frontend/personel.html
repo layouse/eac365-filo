@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAC365 Filo - Personel Yönetimi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="light-theme">
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-truck-moving"></i>
+                    <h1>EAC365 <span>FİLO</span></h1>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div id="userName" class="user-name">Yükleniyor...</div>
+                        <div id="userCompany" class="user-company"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Çıkış
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="nav-menu">
+        <div class="container">
+            <ul>
+                <li><a href="panel.html"><i class="fas fa-home"></i> Ana Panel</a></li>
+                <li><a href="araclar.html"><i class="fas fa-truck"></i> Araçlar</a></li>
+                <li><a href="muhasebe.html"><i class="fas fa-calculator"></i> Muhasebe</a></li>
+                <li><a href="personel.html" class="active"><i class="fas fa-users"></i> Personel</a></li>
+                <li><a href="raporlar.html"><i class="fas fa-chart-line"></i> Raporlar</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <div class="dashboard-header">
+            <div>
+                <h2><i class="fas fa-users"></i> Personel Yönetimi</h2>
+                <p>Şoför, operasyon ve diğer personel bilgileri</p>
+            </div>
+            <button class="btn btn-primary" onclick="openPersonnelModal()">
+                <i class="fas fa-user-plus"></i> Yeni Personel
+            </button>
+        </div>
+        
+        <!-- Filtreler -->
+        <div class="filters-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="İsim, TC veya pozisyon ara...">
+            </div>
+            <select id="positionFilter" class="filter-select">
+                <option value="">Tüm Pozisyonlar</option>
+                <option value="driver">Şoför</option>
+                <option value="operation">Operasyon</option>
+                <option value="accounting">Muhasebe</option>
+                <option value="mechanic">Tamirci</option>
+                <option value="other">Diğer</option>
+            </select>
+            <select id="statusFilter" class="filter-select">
+                <option value="">Tüm Durumlar</option>
+                <option value="active">Aktif</option>
+                <option value="passive">Pasif</option>
+            </select>
+        </div>
+        
+        <!-- Personel Grid -->
+        <div class="personnel-grid" id="personnelGrid">
+            <div class="loading-spinner">Yükleniyor...</div>
+        </div>
+    </main>
+    
+    <!-- Personel Modal -->
+    <div class="modal" id="personnelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="personnelModalTitle">Yeni Personel Ekle</h3>
+                <button class="modal-close" onclick="closePersonnelModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="personnelForm">
+                    <input type="hidden" id="personnelId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Ad</label>
+                            <input type="text" id="firstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Soyad</label>
+                            <input type="text" id="lastName" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> TC Kimlik</label>
+                            <input type="text" id="tcNo" class="form-control" maxlength="11">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Doğum Tarihi</label>
+                            <input type="date" id="birthDate" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Telefon</label>
+                            <input type="tel" id="phone" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> E-posta</label>
+                            <input type="email" id="email" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-briefcase"></i> Pozisyon</label>
+                            <select id="position" class="form-control" required>
+                                <option value="driver">Şoför</option>
+                                <option value="operation">Operasyon</option>
+                                <option value="accounting">Muhasebe</option>
+                                <option value="mechanic">Tamirci</option>
+                                <option value="other">Diğer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-money-bill"></i> Maaş</label>
+                            <input type="number" id="salary" class="form-control" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-alt"></i> İşe Giriş</label>
+                            <input type="date" id="startDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-info-circle"></i> Durum</label>
+                            <select id="personnelStatus" class="form-control">
+                                <option value="active">Aktif</option>
+                                <option value="passive">Pasif</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Adres</label>
+                        <textarea id="address" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-sticky-note"></i> Notlar</label>
+                        <textarea id="personnelNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" onclick="closePersonnelModal()">İptal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Vardiya Modal -->
+    <div class="modal" id="shiftModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Vardiya Ekle</h3>
+                <button class="modal-close" onclick="closeShiftModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="shiftForm">
+                    <input type="hidden" id="shiftPersonnelId">
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Tarih</label>
+                        <input type="date" id="shiftDate" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Başlangıç</label>
+                            <input type="time" id="shiftStart" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Bitiş</label>
+                            <input type="time" id="shiftEnd" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-truck"></i> Kullanılan Araç</label>
+                        <select id="shiftVehicle" class="form-control">
+                            <option value="">Seçiniz</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-road"></i> Başlangıç KM</label>
+                        <input type="number" id="startKm" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-road"></i> Bitiş KM</label>
+                        <input type="number" id="endKm" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-sticky-note"></i> Notlar</label>
+                        <textarea id="shiftNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeShiftModal()">İptal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ödeme Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ödeme Ekle</h3>
+                <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <input type="hidden" id="paymentPersonnelId">
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Tarih</label>
+                        <input type="date" id="paymentDate" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-money-bill"></i> Tutar</label>
+                        <input type="number" id="paymentAmount" class="form-control" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Ödeme Tipi</label>
+                        <select id="paymentType" class="form-control">
+                            <option value="salary">Maaş</option>
+                            <option value="bonus">Prim</option>
+                            <option value="advance">Avans</option>
+                            <option value="expense">Yol/Yemek</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-credit-card"></i> Ödeme Yöntemi</label>
+                        <select id="paymentMethod" class="form-control">
+                            <option value="cash">Nakit</option>
+                            <option value="transfer">Havale</option>
+                            <option value="check">Çek</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-sticky-note"></i> Açıklama</label>
+                        <textarea id="paymentNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">İptal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>EAC365 Filo Yönetim Sistemi © 2026 | v1.0.0</p>
+        </div>
+    </footer>
+    
+    <script src="js/main.js"></script>
+    <script src="js/personnel.js"></script>
+</body>
+</html>
