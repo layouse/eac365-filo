@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAC365 Filo - Ana Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <meta name="csrf-token" content="{{csrfToken}}">
+</head>
+<body class="light-theme">
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-truck-moving"></i>
+                    <h1>EAC365 <span>FİLO</span></h1>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div id="userName" class="user-name">Yükleniyor...</div>
+                        <div id="userCompany" class="user-company"></div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Çıkış
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="nav-menu">
+        <div class="container">
+            <ul>
+                <li><a href="/panel" class="active"><i class="fas fa-home"></i> Ana Panel</a></li>
+                <li><a href="/araclar"><i class="fas fa-truck"></i> Araçlar</a></li>
+                <li><a href="/muhasebe"><i class="fas fa-calculator"></i> Muhasebe</a></li>
+                <li><a href="/personel"><i class="fas fa-users"></i> Personel</a></li>
+                <li><a href="/raporlar"><i class="fas fa-chart-line"></i> Raporlar</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <div class="dashboard-header">
+            <div>
+                <h2><i class="fas fa-tachometer-alt"></i> Genel Görünüm</h2>
+                <p id="fleetSummary">Filo performansınızı anlık takip edin</p>
+            </div>
+            <div class="date-display" id="currentDate"></div>
+        </div>
+        
+        <!-- Özet Kartları -->
+        <div class="stats-grid">
+            <div class="stat-card" onclick="window.location.href='/araclar'">
+                <i class="fas fa-truck stat-icon"></i>
+                <div class="stat-value" id="totalVehicles">0</div>
+                <div class="stat-label">Toplam Araç</div>
+            </div>
+            <div class="stat-card" onclick="window.location.href='/personel'">
+                <i class="fas fa-users stat-icon"></i>
+                <div class="stat-value" id="totalPersonnel">0</div>
+                <div class="stat-label">Toplam Personel</div>
+            </div>
+            <div class="stat-card" onclick="window.location.href='/muhasebe'">
+                <i class="fas fa-chart-line stat-icon"></i>
+                <div class="stat-value" id="monthlyIncome">0 ₺</div>
+                <div class="stat-label">Bu Ay Gelir</div>
+            </div>
+            <div class="stat-card" onclick="window.location.href='/muhasebe'">
+                <i class="fas fa-gas-pump stat-icon"></i>
+                <div class="stat-value" id="monthlyFuel">0 L</div>
+                <div class="stat-label">Bu Ay Yakıt</div>
+            </div>
+        </div>
+        
+        <!-- Son İşlemler -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-history"></i> Son Hareketler
+                <a href="/muhasebe" class="btn btn-sm btn-primary" style="margin-left: auto;">Tümünü Gör</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>İşlem</th>
+                                <th>Açıklama</th>
+                                <th>Tutar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTransactions">
+                            <tr>
+                                <td colspan="4" class="text-center">Yükleniyor...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>EAC365 Filo Yönetim Sistemi © 2026 | DEMO TEST AŞAMASI | DEMO TEST AŞAMASI</p>
+        </div>
+    </footer>
+    
+    <script src="js/main.js"></script>
+    <script src="js/panel.js"></script>
+</body>
+</html>

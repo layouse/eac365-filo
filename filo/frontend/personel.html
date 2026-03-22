@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAC365 Filo - Personel Yönetimi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <meta name="csrf-token" content="{{csrfToken}}">
+</head>
+<body class="light-theme">
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-truck-moving"></i>
+                    <h1>EAC365 <span>FİLO</span></h1>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div id="userName" class="user-name">Yükleniyor...</div>
+                        <div id="userCompany" class="user-company"></div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Çıkış
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="nav-menu">
+        <div class="container">
+            <ul>
+                <li><a href="/panel.html">Ana Panel</a></li>
+                <li><a href="/araclar.html">Araçlar</a></li>
+                <li><a href="/muhasebe.html">Muhasebe</a></li>
+                <li><a href="/personel.html" class="active">Personel</a></li>
+                <li><a href="/raporlar.html">Raporlar</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <div class="dashboard-header">
+            <div>
+                <h2><i class="fas fa-users"></i> Personel Yönetimi</h2>
+                <p id="personnelSummary">Tüm personel bilgileri</p>
+            </div>
+            <button class="btn btn-primary" id="addPersonnelBtn">
+                <i class="fas fa-user-plus"></i> Yeni Personel
+            </button>
+        </div>
+        
+        <!-- İstatistikler -->
+        <div class="stats-grid small">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPersonnel">0</div>
+                <div class="stat-label">Toplam Personel</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activePersonnel">0</div>
+                <div class="stat-label">Aktif</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="driverCount">0</div>
+                <div class="stat-label">Şoför</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalSalary">0 ₺</div>
+                <div class="stat-label">Toplam Maaş</div>
+            </div>
+        </div>
+        
+        <!-- Filtreler -->
+        <div class="filters-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="İsim, TC veya pozisyon ara...">
+            </div>
+            <select id="positionFilter" class="filter-select">
+                <option value="">Tüm Pozisyonlar</option>
+                <option value="driver">Şoför</option>
+                <option value="operation">Operasyon</option>
+                <option value="accounting">Muhasebe</option>
+                <option value="mechanic">Tamirci</option>
+                <option value="other">Diğer</option>
+            </select>
+            <select id="statusFilter" class="filter-select">
+                <option value="">Tüm Durumlar</option>
+                <option value="active">Aktif</option>
+                <option value="passive">Pasif</option>
+            </select>
+            <button class="btn btn-secondary" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Yenile
+            </button>
+        </div>
+        
+        <!-- Personel Grid -->
+        <div id="personnelGrid" class="personnel-grid">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Personel yükleniyor...</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Personel Modal -->
+    <div class="modal" id="personnelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="personnelModalTitle">Yeni Personel Ekle</h3>
+                <button class="modal-close" id="closePersonnelModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="personnelForm">
+                    <input type="hidden" id="personnelId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Ad *</label>
+                            <input type="text" id="firstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Soyad *</label>
+                            <input type="text" id="lastName" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> TC Kimlik</label>
+                            <input type="text" id="tcNo" class="form-control" maxlength="11">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Telefon</label>
+                            <input type="tel" id="phone" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> E-posta</label>
+                            <input type="email" id="email" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-briefcase"></i> Pozisyon</label>
+                            <select id="position" class="form-control" required>
+                                <option value="driver">Şoför</option>
+                                <option value="operation">Operasyon</option>
+                                <option value="accounting">Muhasebe</option>
+                                <option value="mechanic">Tamirci</option>
+                                <option value="other">Diğer</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-money-bill"></i> Maaş (₺)</label>
+                            <input type="number" id="salary" class="form-control" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> İşe Giriş</label>
+                            <input type="date" id="startDate" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-info-circle"></i> Durum</label>
+                        <select id="personnelStatus" class="form-control">
+                            <option value="active">Aktif</option>
+                            <option value="passive">Pasif</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Adres</label>
+                        <textarea id="address" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-sticky-note"></i> Notlar</label>
+                        <textarea id="notes" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" id="cancelPersonnelBtn" style="flex: 1;">İptal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>EAC365 Filo Yönetim Sistemi © 2026 | v2.0 Güvenli</p>
+        </div>
+    </footer>
+    
+    <script src="js/main.js"></script>
+    <script src="js/personnel.js"></script>
+</body>
+</html>
