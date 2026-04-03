@@ -78,4 +78,4 @@ CREATE TABLE IF NOT EXISTS fuel_records (
 
 -- Örnek test kullanıcısı (şifre: 123456)
 INSERT INTO users (name, company, email, phone, password) VALUES 
-('Test Kullanıcı', 'EAC Lojistik', 'test@eac365.com', '05321234567', '$2a$10$XkPq7XkPq7XkPq7XkPq7Xu123456789012345678901234567890');
+('Test Kullanıcı', 'EAC Lojistik', '', '05321234567', '');
